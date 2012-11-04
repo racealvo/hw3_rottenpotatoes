@@ -1,11 +1,20 @@
 # Add a declarative step here for populating the DB with movies.
 
+# each returned element will be a hash whose key is the table header.
+# you should arrange to add that movie to the database here.
 Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
-    # each returned element will be a hash whose key is the table header.
-    # you should arrange to add that movie to the database here.
+    # build the where clause
+    can_find_this_movie = ""
+    movie.each do |elem|
+      can_find_this_movie += " and " + elem[0].to_s + " = " + elem[1].to_s
+    end
+    can_find_this_movie = can_find_this_movie[5, can_find_this_movie.length-5]
+    # Find the movie in the DB.  If not there, then add it.
+    if Movie.where can_find_this_movie == nil
+      Movie.create!(movie)
+    end
   end
-  flunk "Unimplemented"
 end
 
 # Make sure that one string (regexp) occurs before or after another one
